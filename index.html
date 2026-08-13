@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dumbbell PPL — 3-Day Training Tracker</title>
+<style>
+  :root{
+    --bg:#0a1421; --panel:#0f1f33; --panel2:#14293f;
+    --ink:#64ffda; --ink2:#3dd4b0;
+    --text:#e6f1ff; --muted:#8892b0;
+    --push:#ff6b6b; --pull:#4dabf7; --legs:#ffb454; --core:#b197fc;
+    --done:#2ecc71; --border:#1e3a52;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh; padding:0 0 60px;
+    line-height:1.5;
+  }
+  header{
+    background:linear-gradient(135deg,#0a1421 0%,#112a44 100%);
+    border-bottom:2px solid var(--ink);
+    padding:28px 20px 22px; text-align:center;
+  }
+  header h1{
+    font-size:clamp(1.6rem,4vw,2.4rem); font-weight:800;
+    letter-spacing:.5px;
+    background:linear-gradient(90deg,var(--ink),#fff);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  header p{color:var(--muted); margin-top:6px; font-size:.95rem}
+  .stats{
+    display:flex; justify-content:center; gap:18px; flex-wrap:wrap;
+    margin-top:14px; font-size:.85rem;
+  }
+  .stats span{
+    background:var(--panel); border:1px solid var(--border);
+    padding:6px 14px; border-radius:20px; color:var(--muted);
+  }
+  .stats b{color:var(--ink)}
+
+  /* Day tabs */
+  .tabs{
+    display:flex; justify-content:center; gap:8px;
+    flex-wrap:wrap; padding:18px 16px 6px; position:sticky; top:0;
+    background:var(--bg); z-index:10; border-bottom:1px solid var(--border);
+  }
+  .tab{
+    cursor:pointer; border:1px solid var(--border);
+    background:var(--panel); color:var(--text);
+    padding:10px 20px; border-radius:10px; font-weight:700;
+    font-size:.95rem; transition:.18s; user-select:none;
+  }
+  .tab:hover{border-color:var(--ink)}
+  .tab.active{background:var(--ink); color:#04263a; border-color:var(--ink)}
+  .tab .pill{font-size:.75rem; opacity:.7; margin-left:4px}
+
+  main{max-width:1100px; margin:0 auto; padding:20px 16px 0}
+  .day-title{
+    font-size:1.5rem; font-weight:800; margin:18px 4px 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .badge{
+    font-size:.7rem; padding:3px 10px; border-radius:12px;
+    color:#04263a; font-weight:800; letter-spacing:.5px;
+  }
+  .b-push{background:var(--push)} .b-pull{background:var(--pull)}
+  .b-legs{background:var(--legs)} .b-core{background:var(--core)}
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(310px,1fr));
+    gap:16px;
+  }
+
+  .card{
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:14px; overflow:hidden; transition:.2s;
+    display:flex; flex-direction:column;
+  }
+  .card:hover{border-color:var(--ink); transform:translateY(-2px)}
+  .card.done{border-color:var(--done); opacity:.85}
+  .card-top{display:flex; gap:12px; padding:14px}
+  .card-img{
+    width:96px; height:96px; flex:0 0 96px; border-radius:10px;
+    background:#0a1421; border:1px solid var(--border); overflow:hidden;
+  }
+  .card-img img{width:100%; height:100%; object-fit:contain}
+  .card-head{flex:1; min-width:0}
+  .card-head h3{font-size:1.05rem; line-height:1.25; margin-bottom:6px}
+  .meta{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
+  .chip{
+    font-size:.72rem; padding:3px 9px; border-radius:10px;
+    background:var(--panel2); color:var(--muted); border:1px solid var(--border);
+  }
+  .chip b{color:var(--ink)}
+  .notes{
+    font-size:.78rem; color:var(--muted); font-style:italic;
+    padding:0 14px 12px; border-top:1px dashed var(--border);
+    padding-top:10px; margin-top:0;
+  }
+  .sets{
+    padding:12px 14px; background:var(--panel2);
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  }
+  .setlabel{font-size:.75rem; color:var(--muted); width:100%; margin-bottom:2px}
+  .setbox{
+    width:34px; height:34px; border-radius:8px; cursor:pointer;
+    border:2px solid var(--border); background:var(--panel);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:.8rem; color:var(--muted); transition:.15s;
+  }
+  .setbox:hover{border-color:var(--ink)}
+  .setbox.checked{background:var(--done); border-color:var(--done); color:#04263a}
+  .setbox.checked::after{content:"✓"}
+
+  .timer-bar{
+    position:fixed; bottom:0; left:0; right:0;
+    background:var(--panel); border-top:2px solid var(--ink);
+    padding:14px 20px; display:none; align-items:center; justify-content:center;
+    gap:18px; flex-wrap:wrap; z-index:50;
+  }
+  .timer-bar.show{display:flex}
+  .timer-bar .t{font-size:1.6rem; font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums}
+  .timer-bar small{color:var(--muted); display:block; font-size:.7rem}
+  .btn{
+    cursor:pointer; border:none; border-radius:8px; padding:8px 16px;
+    font-weight:700; font-size:.85rem; transition:.15s;
+  }
+  .btn-ghost{background:var(--panel2); color:var(--text); border:1px solid var(--border)}
+  .btn-ghost:hover{border-color:var(--ink)}
+  .btn-ink{background:var(--ink); color:#04263a}
+  .btn-ink:hover{background:var(--ink2)}
+
+  .reset-all{
+    text-align:center; margin:30px 0 10px;
+  }
+  .reset-all .btn{background:#ff6b6b; color:#fff}
+  footer{
+    text-align:center; color:var(--muted); font-size:.78rem;
+    margin-top:20px; padding:0 16px;
+  }
+  .hidden{display:none!important}
+  @media(max-width:520px){
+    .card-img{width:78px;height:78px;flex-basis:78px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🏋️ DUMBBELL PPL — 3-DAY SPLIT</h1>
+  <p>Push / Pull+Core / Legs+Core &middot; tap each set as you complete it</p>
+  <div class="stats">
+    <span>Today: <b id="todaySets">0</b> sets</span>
+    <span>Exercises done: <b id="todayEx">0</b>/<b id="todayExTotal">0</b></span>
+    <span>Last workout: <b id="lastWorkout">—</b></span>
+  </div>
+</header>
+
+<div class="tabs" id="tabs"></div>
+<main id="main"></main>
+
+<div class="reset-all">
+  <button class="btn" onclick="resetDay()">↺ Reset this day</button>
+</div>
+
+<div class="timer-bar" id="timerBar">
+  <div>
+    <div class="t" id="timerDisplay">01:30</div>
+    <small>rest timer</small>
+  </div>
+  <button class="btn btn-ghost" onclick="addTime(-15)">−15s</button>
+  <button class="btn btn-ghost" onclick="addTime(15)">+15s</button>
+  <button class="btn btn-ink" onclick="stopTimer()">Skip</button>
+</div>
+
+<footer>
+  Progress is saved locally in your browser. &middot; Form diagrams are illustrative — focus on control and full range of motion.
+</footer>
+
+<script>
+// ---- Workout data (from your CSV) ----
+const DATA = {
+  "Day 1": {
+    label:"Day 1 · PUSH", badge:"PUSH", cls:"push",
+    items:[
+      {ex:"Dumbbell Bench Press",    sets:4, reps:"8-12",   img:"dumbbell-bench-press",   notes:"Flat bench, squeeze at the top"},
+      {ex:"Incline Dumbbell Press",  sets:4, reps:"8-12",   img:"incline-dumbbell-press", notes:"Bench at 30-45° incline, upper chest"},
+      {ex:"Seated Shoulder Press",   sets:4, reps:"8-12",   img:"seated-shoulder-press",  notes:"Keep lower back pressed against the bench"},
+      {ex:"Lateral Raises",          sets:4, reps:"10-15",  img:"lateral-raises",         notes:"Use lighter dumbbells, control the descent"},
+      {ex:"Tricep Overhead Extension",sets:3, reps:"10-12", img:"tricep-overhead-extension", notes:"One dumbbell, stretch behind the head"},
+      {ex:"Tricep Kickbacks",        sets:3, reps:"12-15",  img:"triceps-kickbacks",      notes:"Elbows pinned to your ribs"},
+    ]
+  },
+  "Day 2": {
+    label:"Day 2 · PULL + CORE", badge:"PULL", cls:"pull",
+    items:[
+      {ex:"Pull-ups / Chin-ups",     sets:4, reps:"AMRAP*", img:"pull-ups",              notes:"Max reps per set. Do negatives if needed"},
+      {ex:"Bent-Over Rows",          sets:4, reps:"8-12",   img:"bent-over-rows",        notes:"Flat back, pull dumbbells to lower ribs"},
+      {ex:"Single-Arm Dumbbell Rows",sets:4, reps:"8-12",   img:"single-arm-dumbbell-rows", notes:"One knee/arm on the bench for support"},
+      {ex:"Reverse Flyes",           sets:3, reps:"10-15",  img:"reverse-flyes",         notes:"Hinge forward, drive arms back for rear delts"},
+      {ex:"Bicep Curls",             sets:4, reps:"8-12",   img:"bicep-curls",           notes:"Standard palms-up curl"},
+      {ex:"Hammer Curls",            sets:3, reps:"10-12",  img:"hammer-curls",          notes:"Palms facing each other, works forearms"},
+      {ex:"Russian Twists",          sets:3, reps:"15/side",img:"russian-twists",        notes:"Sit back and twist holding one dumbbell", core:true},
+    ]
+  },
+  "Day 3": {
+    label:"Day 3 · LEGS + CORE", badge:"LEGS", cls:"legs",
+    items:[
+      {ex:"Goblet Squats",           sets:4, reps:"10-12",  img:"goblet-squats",         notes:"Hold one heavy dumbbell vertically to your chest"},
+      {ex:"Bulgarian Split Squats",  sets:4, reps:"8-10/leg", img:"bulgarian-split-squats", notes:"Rear foot rests on the bench"},
+      {ex:"Romanian Deadlifts (RDLs)",sets:4, reps:"10-12", img:"romanian-deadlifts",   notes:"Hinge at hips, feel the hamstring stretch"},
+      {ex:"Reverse/Fwd Lunges",      sets:3, reps:"10-12/leg", img:"lunges",            notes:"Keep front knee behind your toes"},
+      {ex:"Weighted Crunches",       sets:3, reps:"15-20",  img:"weighted-crunches",     notes:"Hold dumbbell across your chest", core:true},
+    ]
+  }
+};
+
+const DAY_KEYS = Object.keys(DATA);
+const STORAGE = "training-progress-v1";
+let progress = JSON.parse(localStorage.getItem(STORAGE) || "{}");
+// progress[dayKey][exerciseName] = [bool,bool,...]
+let currentDay = DAY_KEYS[0];
+
+// ---- render tabs ----
+const tabsEl = document.getElementById('tabs');
+DAY_KEYS.forEach(k=>{
+  const d = document.createElement('div');
+  d.className = 'tab' + (k===currentDay?' active':'');
+  d.dataset.day = k;
+  d.innerHTML = `${DATA[k].label.split('·')[0].trim()} <span class="pill">${DATA[k].items.length} ex</span>`;
+  d.onclick = ()=>{ currentDay=k; render(); };
+  tabsEl.appendChild(d);
+});
+
+// ---- render main ----
+function render(){
+  // tab states
+  [...tabsEl.children].forEach(t=>t.classList.toggle('active', t.dataset.day===currentDay));
+  const d = DATA[currentDay];
+  const main = document.getElementById('main');
+
+  // group core separately if mixed
+  const groups = {};
+  d.items.forEach(it=>{
+    const g = it.core ? 'CORE' : d.badge;
+    (groups[g] = groups[g]||[]).push(it);
+  });
+
+  let html = `<div class="day-title">${d.label} <span class="badge b-${d.cls}">${d.badge}</span></div>`;
+  Object.entries(groups).forEach(([gname, items])=>{
+    html += `<h4 style="color:var(--muted);margin:14px 4px 10px;font-size:.8rem;letter-spacing:1px">${gname}</h4><div class="grid">`;
+    items.forEach((it, idx)=>{
+      const realIdx = d.items.indexOf(it);
+      const checked = progress[currentDay]?.[it.ex] || [];
+      const allDone = checked.length===it.sets && it.sets>0;
+      html += card(it, realIdx, checked, allDone);
+    });
+    html += `</div>`;
+  });
+  main.innerHTML = html;
+  bindSets();
+  updateStats();
+}
+
+function card(it, idx, checked, allDone){
+  let sets = '';
+  for(let i=0;i<it.sets;i++){
+    sets += `<div class="setbox ${checked[i]?'checked':''}" data-i="${i}">${i+1}</div>`;
+  }
+  return `
+  <div class="card ${allDone?'done':''}" data-ex="${escapeAttr(it.ex)}">
+    <div class="card-top">
+      <div class="card-img"><img src="images/${it.img}.jpg" alt="${escapeAttr(it.ex)} form reference" loading="lazy" onerror="this.onerror=null;this.src='images/${it.img}.png'"></div>
+      <div class="card-head">
+        <h3>${it.ex}</h3>
+        <div class="meta">
+          <span class="chip"><b>${it.sets}</b> sets</span>
+          <span class="chip"><b>${escapeHtml(it.reps)}</b> reps</span>
+        </div>
+      </div>
+    </div>
+    <div class="notes">💡 ${escapeHtml(it.notes)}</div>
+    <div class="sets" data-ex="${escapeAttr(it.ex)}">
+      <span class="setlabel">Tap a set when done · starts a 90s rest timer</span>
+      ${sets}
+    </div>
+  </div>`;
+}
+
+function bindSets(){
+  document.querySelectorAll('.setbox').forEach(box=>{
+    box.onclick = ()=>{
+      const ex = box.parentElement.dataset.ex;
+      const i = +box.dataset.i;
+      if(!progress[currentDay]) progress[currentDay]={};
+      if(!progress[currentDay][ex]) progress[currentDay][ex]=[];
+      const was = progress[currentDay][ex][i];
+      progress[currentDay][ex][i] = !was;
+      // trim trailing falsy
+      const arr = progress[currentDay][ex];
+      while(arr.length && !arr[arr.length-1]) arr.pop();
+      if(!arr.length) delete progress[currentDay][ex];
+      save();
+      if(!was) startTimer(); // started a set -> rest
+      render();
+    };
+  });
+}
+
+// ---- stats ----
+function updateStats(){
+  const d = DATA[currentDay];
+  if(!progress[currentDay]){ progress[currentDay]={}; }
+  let sets=0, ex=0;
+  d.items.forEach(it=>{
+    const c = (progress[currentDay][it.ex]||[]).filter(Boolean);
+    sets += c.length;
+    if(c.length===it.sets) ex++;
+  });
+  document.getElementById('todaySets').textContent = sets;
+  document.getElementById('todayEx').textContent = ex;
+  document.getElementById('todayExTotal').textContent = d.items.length;
+
+  // last workout timestamp = most recent progress entry date
+  const last = localStorage.getItem(STORAGE+"-last");
+  document.getElementById('lastWorkout').textContent = last
+    ? new Date(last).toLocaleDateString(undefined,{month:'short',day:'numeric'})
+    : '—';
+}
+
+function save(){
+  localStorage.setItem(STORAGE, JSON.stringify(progress));
+  localStorage.setItem(STORAGE+"-last", new Date().toISOString());
+}
+
+function resetDay(){
+  if(!confirm(`Reset all set progress for ${currentDay}?`)) return;
+  if(progress[currentDay]) delete progress[currentDay];
+  save();
+  localStorage.removeItem(STORAGE+"-last");
+  render();
+}
+
+// ---- rest timer ----
+let timerInt=null, timerEnd=0;
+function startTimer(){
+  const bar = document.getElementById('timerBar');
+  bar.classList.add('show');
+  if(timerInt) return; // already running, don't restart
+  timerEnd = Date.now() + 90000;
+  tick();
+  timerInt = setInterval(tick, 250);
+}
+function tick(){
+  const ms = timerEnd - Date.now();
+  if(ms<=0){ stopTimer(); return; }
+  const s = Math.ceil(ms/1000);
+  document.getElementById('timerDisplay').textContent =
+    String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+function addTime(sec){
+  if(!timerInt) startTimer();
+  timerEnd += sec*1000; tick();
+}
+function stopTimer(){
+  clearInterval(timerInt); timerInt=null;
+  document.getElementById('timerBar').classList.remove('show');
+}
+
+// ---- helpers ----
+function escapeHtml(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function escapeAttr(s){return escapeHtml(s).replace(/"/g,'&quot;');}
+
+render();
+</script>
+</body>
+</html>
