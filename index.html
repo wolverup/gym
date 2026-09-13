@@ -66,7 +66,7 @@
     font-size:.7rem; padding:3px 10px; border-radius:12px;
     color:#04263a; font-weight:800; letter-spacing:.5px;
   }
-  .b-push{background:var(--push)} .b-pull{background:var(--pull)}
+  .b-push{background:var(--push)} .b-pull{background:var(--pull)} .b-out{background:var(--done)}
   .b-legs{background:var(--legs)} .b-core{background:var(--core)}
 
   .grid{
@@ -244,6 +244,19 @@ const DATA = {
       {ex:"Hanging Knee Raises",      sets:3, reps:"10-15",  img:null, emo:"🧗", bw:true,  notes:"From the pull-up bar — knees to chest, no swinging", core:true},
       {ex:"Plank",                   sets:3, reps:"45-60s", img:null, emo:"🧘", bw:true,  notes:"Body straight, squeeze glutes and abs — this also protects your lower back", core:true},
     ]
+  },
+  "Day 5": {
+    label:"Day 5 · OUTDOOR", badge:"OUTDOOR", cls:"out", note:"<b>OUTDOOR RULE:</b> no dumbbells out here — so you progress with <b>reps</b> (beat last session every time) and <b>harder variations</b> (push-ups → decline → archer). Bodyweight builds muscle the same way iron does: progressive tension.",
+    items:[
+      {ex:"Pull-ups (park bar)",      sets:4, reps:"AMRAP",  img:"pull-ups",              notes:"The outdoor lat builder. Negatives if you fail early"},
+      {ex:"Australian Rows",          sets:4, reps:"AMRAP",  img:null, emo:"🧗", bw:true,  notes:"Body under a low bar or table edge, chest to bar — squeezes the whole back"},
+      {ex:"Push-ups",                 sets:4, reps:"AMRAP",  img:null, emo:"💪", bw:true,  notes:"Chest to floor, full lockout. Add reps every session"},
+      {ex:"Decline Push-ups",         sets:3, reps:"AMRAP",  img:null, emo:"🔺", bw:true,  notes:"Feet on a bench — hits upper chest and shoulders hard"},
+      {ex:"Bench Dips",               sets:3, reps:"AMRAP",  img:null, emo:"🪑", bw:true,  notes:"Hands on a bench behind you, straight body, full depth — triceps"},
+      {ex:"Pike Push-ups",            sets:3, reps:"AMRAP",  img:null, emo:"⛰️", bw:true,  notes:"Hips high, head to ground — the outdoor shoulder press"},
+      {ex:"Hanging Knee Raises",      sets:3, reps:"10-15",  img:null, emo:"🧗", bw:true,  notes:"From the park bar — knees to chest, no swinging", core:true},
+      {ex:"Plank",                    sets:3, reps:"45-60s", img:null, emo:"🧘", bw:true,  notes:"Straight line, squeeze everything", core:true},
+    ]
   }
 };
 
@@ -302,6 +315,7 @@ function render(){
 
   let html = `<div class="weekbanner">${WEEKS[currentWeek].focus}</div>`;
   html += `<div class="day-title">${d.label} <span class="badge b-${d.cls}">${d.badge}</span></div>`;
+  if (d.note) html += `<div class="weekbanner">${d.note}</div>`;
   Object.entries(groups).forEach(([gname, items])=>{
     html += `<h4 style="color:var(--muted);margin:14px 4px 10px;font-size:.8rem;letter-spacing:1px">${gname}</h4><div class="grid">`;
     items.forEach((it)=>{
