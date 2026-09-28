@@ -1,5 +1,5 @@
 // 1M Protocol service worker — cache the whole app, run offline
-const CACHE = 'protocol-v1';
+const CACHE = 'protocol-v2';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
