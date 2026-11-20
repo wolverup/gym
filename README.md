@@ -1,6 +1,6 @@
-# 🏋️ Dumbbell PPL — 3-Day Training Tracker
+# 🔥 1-MONTH MUSCLE PROTOCOL — Dumbbell + Bodyweight
 
-A clean, browser-based workout tracker for a 3-day dumbbell Push / Pull+Core / Legs+Core split.
+A browser-based 4-week progressive muscle program — dumbbells + bodyweight only, upper-body focus, no legs.
 100% client-side — no backend, no sign-up, no data leaves your browser.
 
 ![Split](https://img.shields.io/badge/split-Push%2FPull%2FLegs-64ffda)
@@ -9,8 +9,9 @@ A clean, browser-based workout tracker for a 3-day dumbbell Push / Pull+Core / L
 
 ## Features
 
-- **3-day tabs** — Day 1 Push · Day 2 Pull+Core · Day 3 Legs+Core
-- **18 exercises**, each with a form-reference illustration, sets, reps, and coaching notes
+- **4-week progression** — W1 Adapt · W2 Volume · W3 Overload (+1 set auto-applied) · W4 Peak (AMRAP finishers)
+- **4-day tabs** — Push A · Pull A · Push B · Pull B (upper hit 2×/week)
+- **24 exercises** — dumbbell + bodyweight only, with illustrations or icons, coaching notes per exercise
 - **Tap-to-complete sets** — check off each set as you finish it; the card turns green when all sets are done
 - **Auto rest timer** (90s) pops up after each set, with −15s / +15s / Skip
 - **Progress saved in `localStorage`** — survives reloads; remembers your last workout date
@@ -21,9 +22,10 @@ A clean, browser-based workout tracker for a 3-day dumbbell Push / Pull+Core / L
 
 | Day  | Focus        | Exercises                                                              |
 |------|--------------|------------------------------------------------------------------------|
-| 1    | **PUSH**     | Bench press, incline press, shoulder press, lateral raise, triceps ext, kickbacks |
-| 2    | **PULL + CORE** | Pull-ups, rows, single-arm rows, reverse flyes, bicep curls, hammer curls, russian twists |
-| 3    | **LEGS + CORE** | Goblet squat, Bulgarian split squat, RDL, lunges, weighted crunches |
+| 1    | **PUSH A**   | Bench press, incline press, shoulder press, lateral raise, overhead ext, push-ups (AMRAP) |
+| 2    | **PULL A**   | Pull-ups, bent-over rows, single-arm rows, curls, hammer curls, russian twists |
+| 3    | **PUSH B**   | Incline press, shoulder press, lateral raise burnout, pike push-ups, chair dips, kickbacks |
+| 4    | **PULL B**   | Heavy single-arm rows, bent-over rows, reverse flyes, table rows, slow curls, plank |
 
 ## Run it
 
